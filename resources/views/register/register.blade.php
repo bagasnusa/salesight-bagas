@@ -209,7 +209,7 @@
 
                     @csrf
 
-                    {{-- Error messages --}}
+                    {{-- Error messages Global --}}
                     @if ($errors->any())
                         <div class="alert-error">
                             <ul>
@@ -459,6 +459,13 @@
                                     value="{{ old('store_name') }}"
                                 >
                             </div>
+                            
+                            @error('store_name')
+                                <p style="color: #ef4444; font-size: 12px; margin-top: 8px; font-weight: 600;">
+                                    {{ $message }}
+                                </p>
+                            @enderror
+
                             <p class="role-extra-hint">Nama ini akan tampil di dashboard dan laporan bisnis Anda.</p>
                         </div>
 
@@ -494,6 +501,13 @@
                                     value="{{ old('branch_code') }}"
                                 >
                             </div>
+
+                            @error('branch_code')
+                                <p style="color: #ef4444; font-size: 12px; margin-top: 8px; font-weight: 600;">
+                                    {{ $message }}
+                                </p>
+                            @enderror
+
                             <p class="role-extra-hint">Gunakan kode cabang yang diberikan oleh owner bisnis Anda.</p>
                         </div>
 

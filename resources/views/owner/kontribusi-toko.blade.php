@@ -2,285 +2,226 @@
 
 @section('content')
 
-<div class="kontribusi-main-content">
-    <div class="kontribusi-section">
+<div class="kontribusi-content">
 
-        <div class="kontribusi-sec-header">
-            <div class="kontribusi-header-container">
-                <div class="kontribusi-heading">
-                    <div class="kontribusi-title">Kontribusi Penjualan Toko</div>
-                </div>
-                <p class="kontribusi-subtitle">Persentase kontribusi penjualan per cabang</p>
-            </div>
+    {{-- HEADER --}}
+    <div class="kontribusi-page-header">
+        <div class="kontribusi-title">Kontribusi Penjualan Toko</div>
+        <p class="kontribusi-subtitle">Persentase kontribusi penjualan per cabang</p>
+    </div>
+
+    @if($isEmpty)
+    {{-- EMPTY STATE --}}
+    <div class="kontribusi-empty-state">
+        <i data-lucide="pie-chart" style="width:40px;height:40px;color:#94a3b8;"></i>
+        <div class="kontribusi-empty-title">Belum ada data penjualan</div>
+        <div class="kontribusi-empty-desc">
+            Data akan muncul setelah admin menginputkan transaksi penjualan cabang.
         </div>
+    </div>
 
-        <div class="kontribusi-container">
+    @else
 
-            <!-- Card utama -->
-            <div class="kontribusi-card-wrapper">
-                <div class="kontribusi-card-main">
+    <div class="kontribusi-grid">
 
-                    <div class="kontribusi-card-header">
-                        <div class="kontribusi-card-title-wrapper">
-                            <div class="kontribusi-card-title">Kontribusi Penjualan per Toko</div>
-                        </div>
-                        <div class="kontribusi-card-subtitle-wrapper">
-                            <div class="kontribusi-card-subtitle">Distribusi penjualan berdasarkan periode</div>
-                        </div>
-                    </div>
+        {{-- CARD UTAMA --}}
+        <div class="kontribusi-card-main">
 
-                    <!-- Dropdown periode -->
-                    <div class="kontribusi-filter-frame">
-                        <form method="GET"
-                            action="{{ route('owner.kontribusi-toko') }}">
-                            <select
-                                name="tahun"
-                                onchange="this.form.submit()"
-                                class="form-select">
-                                @foreach($tahunList as $itemTahun)
-                                    <option
-                                        value="{{ $itemTahun }}"
-                                        {{ $tahun == $itemTahun ? 'selected' : '' }}>
-                                        {{ $itemTahun }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </form>
-                    </div>
-
-                    <!-- Area chart placeholder -->
-                    <div class="kontribusi-chart-placeholder">
-                        <canvas id="edasChart"></canvas>
-                    </div>
-
-                    <!-- Ranking Toko -->
-                    <div class="kontribusi-ranking-list">
-
-                        @foreach($data as $item)
-
-                        <div class="kontribusi-ranking-item">
-
-                            <div class="kontribusi-ranking-left">
-
-                                <div class="kontribusi-ranking-number">
-                                    #{{ $item->ranking_position }}
-                                </div>
-
-                                <div class="kontribusi-ranking-info">
-
-                                    <div class="kontribusi-ranking-name">
-                                        {{ $item->shopping_mall }}
-                                    </div>
-
-                                    <div class="kontribusi-ranking-score">
-                                        Score EDAS:
-                                        {{ number_format($item->appraisal_score, 4) }}
-                                    </div>
-
-                                </div>
-
-                            </div>
-
-                            <div class="kontribusi-ranking-right">
-
-                                <div class="kontribusi-ranking-percent">
-                                    {{ number_format($item->persentase, 1) }}%
-                                </div>
-
-                                <div class="kontribusi-ranking-sales">
-                                    Rp{{ number_format($item->total_sales, 0, ',', '.') }}
-                                </div>
-
-                            </div>
-
-                        </div>
-
+            <div class="kontribusi-card-top">
+                <div>
+                    <div class="kontribusi-card-title">Kontribusi Penjualan per Toko</div>
+                    <div class="kontribusi-card-subtitle">Distribusi penjualan berdasarkan periode</div>
+                </div>
+                <form method="GET" action="{{ route('owner.kontribusi-toko') }}">
+                    <select name="tahun" onchange="this.form.submit()" class="kontribusi-select">
+                        @foreach($tahunList as $itemTahun)
+                            <option value="{{ $itemTahun }}" {{ $tahun == $itemTahun ? 'selected' : '' }}>
+                                {{ $itemTahun }}
+                            </option>
                         @endforeach
+                    </select>
+                </form>
+            </div>
 
-    <!-- Total -->
-    <div class="kontribusi-ranking-total">
+            {{-- DOUGHNUT CHART --}}
+            <div class="kontribusi-chart-area">
+                <div class="kontribusi-chart-wrap">
+                    <canvas id="edasChart"></canvas>
+                    <div class="kontribusi-chart-center">
+                        <div class="kontribusi-chart-center-num">{{ $jumlahCabang }}</div>
+                        <div class="kontribusi-chart-center-label">Toko Aktif</div>
+                    </div>
+                </div>
+            </div>
 
-        <div>Total Penjualan</div>
+            {{-- LEGEND + RANKING --}}
+            <div class="kontribusi-legend">
+                @foreach($data as $i => $item)
+                @php
+                    $palette = ['#314cff','#10b981','#f59e0b','#ef4444','#8b5cf6','#06b6d4','#ec4899','#84cc16'];
+                    $color = $palette[$i % count($palette)];
+                @endphp
+                <div class="kontribusi-legend-row">
+                    <div class="kontribusi-legend-left">
+                        <span class="kontribusi-legend-dot" style="background:{{ $color }};"></span>
+                        <span class="kontribusi-legend-name">{{ $item->shopping_mall }}</span>
+                    </div>
+                    <div class="kontribusi-legend-right">
+                        <span class="kontribusi-legend-pct">{{ number_format($item->persentase, 1) }}%</span>
+                        <span class="kontribusi-legend-val">Rp{{ number_format($item->total_sales, 0, ',', '.') }}</span>
+                    </div>
+                </div>
+                @endforeach
 
-        <div>
-            Rp{{ number_format($totalSales, 0, ',', '.') }}
+                <div class="kontribusi-legend-total">
+                    <span>Total</span>
+                    <div class="kontribusi-legend-right">
+                        <span class="kontribusi-legend-pct">100%</span>
+                        <span class="kontribusi-legend-val">Rp{{ number_format($totalSales, 0, ',', '.') }}</span>
+                    </div>
+                </div>
+            </div>
+
         </div>
 
-    </div>
+        {{-- SIDEBAR KANAN --}}
+        <div class="kontribusi-sidebar">
 
-</div>
-
+            {{-- Kontribusi Terbesar --}}
+            <div class="kontribusi-side-card">
+                <div class="kontribusi-side-card-title">Kontribusi Terbesar</div>
+                <div class="kontribusi-side-card-body">
+                    <div class="kontribusi-side-icon blue-icon">
+                        <i data-lucide="trending-up" style="width:20px;height:20px;color:#314cff;"></i>
+                    </div>
+                    <div class="kontribusi-side-info">
+                        <div class="kontribusi-side-store">{{ $best->shopping_mall }}</div>
+                        <div class="kontribusi-side-pct blue">{{ number_format($best->persentase, 1) }}%</div>
+                    </div>
+                </div>
+                <div class="kontribusi-side-sales">Rp{{ number_format($best->total_sales, 0, ',', '.') }}</div>
+                <div class="kontribusi-progress-track">
+                    <div class="kontribusi-progress-fill blue"
+                        style="width:{{ number_format($best->persentase, 1) }}%;"></div>
                 </div>
             </div>
 
-            <!-- Card Kontribusi Terbesar -->
-            <div class="kontribusi-card-biggest">
-                <div class="kontribusi-small-card-title-wrapper">
-                    <div class="kontribusi-small-card-title">Kontribusi Terbesar</div>
-                </div>
-
-                <div class="kontribusi-biggest-content">
-                    <div class="kontribusi-biggest-icon-wrapper">
-                        <div class="kontribusi-icon-inner">
-                            <img class="kontribusi-icon-chart-2" src="{{ asset('img/kontribusibesar.png') }}" />
-                        </div>
+            {{-- Kontribusi Terkecil --}}
+            <div class="kontribusi-side-card">
+                <div class="kontribusi-side-card-title">Kontribusi Terkecil</div>
+                <div class="kontribusi-side-card-body">
+                    <div class="kontribusi-side-icon gray-icon">
+                        <i data-lucide="trending-down" style="width:20px;height:20px;color:#64748b;"></i>
                     </div>
-
-                    <div class="kontribusi-biggest-text">
-                        <div class="kontribusi-store-name">
-                            {{ $best->shopping_mall }}
-                        </div>
-                        <div class="kontribusi-percent-wrapper">
-                            <div class="kontribusi-percent-blue">
-                                {{ number_format($best->persentase, 1) }}%
-                            </div>
-                        </div>
+                    <div class="kontribusi-side-info">
+                        <div class="kontribusi-side-store">{{ $worst->shopping_mall }}</div>
+                        <div class="kontribusi-side-pct gray">{{ number_format($worst->persentase, 1) }}%</div>
                     </div>
                 </div>
-
-                <div class="kontribusi-amount-wrapper">
-                    <div class="kontribusi-amount">
-                        Rp{{ number_format($best->total_sales, 0, ',', '.') }}
-                    </div>
-                </div>
-
-                <div class="kontribusi-progress-wrapper">
-                    <div class="kontribusi-progress-blue"></div>
+                <div class="kontribusi-side-sales">Rp{{ number_format($worst->total_sales, 0, ',', '.') }}</div>
+                <div class="kontribusi-progress-track">
+                    <div class="kontribusi-progress-fill gray"
+                        style="width:{{ number_format($worst->persentase, 1) }}%;"></div>
                 </div>
             </div>
 
-            <!-- Card Kontribusi Terkecil -->
-            <div class="kontribusi-card-smallest">
-                <div class="kontribusi-small-card-title-wrapper">
-                    <div class="kontribusi-small-card-title">Kontribusi Terkecil</div>
-                </div>
-
-                <div class="kontribusi-smallest-content">
-                    <div class="kontribusi-smallest-icon-wrapper">
-                        <div class="kontribusi-icon-inner">
-                            <img class="kontribusi-icon-gray-1" src="{{ asset('img/kontribusikecil.png') }}" />
-                        </div>
-                    </div>
-
-                    <div class="kontribusi-smallest-text">
-                        <div class="kontribusi-store-name-small">
-                            {{ $worst->shopping_mall }}
-                        </div>
-                        <div class="kontribusi-percent-wrapper">
-                            <div class="kontribusi-percent-gray">
-                                {{ number_format($worst->persentase, 1) }}%
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="kontribusi-amount-wrapper">
-                    <div class="kontribusi-amount-small">
-                        Rp{{ number_format($worst->total_sales, 0, ',', '.') }}
-                    </div>
-                </div>
-
-                <div class="kontribusi-progress-gray"></div>
-            </div>
-
-            <!-- Card Ringkasan -->
-            <div class="kontribusi-card-summary">
-                <div class="kontribusi-small-card-title-wrapper">
-                    <div class="kontribusi-summary-title">Ringkasan</div>
-                </div>
-
-                <div class="kontribusi-summary-row kontribusi-summary-row-large">
-                    <div class="kontribusi-summary-label-wrap">
-                        <div class="kontribusi-summary-label">Total Penjualan</div>
-                    </div>
-                    <div class="kontribusi-summary-value-wrap">
-                        <div class="kontribusi-summary-value">
+            {{-- Ringkasan --}}
+            <div class="kontribusi-side-card">
+                <div class="kontribusi-side-card-title">Ringkasan</div>
+                <div class="kontribusi-summary-list">
+                    <div class="kontribusi-summary-row">
+                        <span class="kontribusi-summary-label">Total Penjualan</span>
+                        <span class="kontribusi-summary-value">
                             Rp{{ number_format($totalSales, 0, ',', '.') }}
-                        </div>
+                        </span>
                     </div>
-                </div>
-
-                <div class="kontribusi-summary-row">
-                    <div class="kontribusi-summary-label-wrap-2">
-                        <div class="kontribusi-summary-label-single">Jumlah Cabang</div>
+                    <div class="kontribusi-summary-row">
+                        <span class="kontribusi-summary-label">Jumlah Cabang</span>
+                        <span class="kontribusi-summary-value">{{ $jumlahCabang }} cabang</span>
                     </div>
-                    <div class="kontribusi-summary-value-wrap-2">
-                        <div class="kontribusi-summary-value">
-                            {{ $jumlahCabang }} cabang
-                        </div>
-                    </div>
-                </div>
-
-                <div class="kontribusi-summary-row kontribusi-summary-row-large-no-border">
-                    <div class="kontribusi-summary-label-wrap-4">
-                        <div class="kontribusi-summary-label">Rata-rata per Cabang</div>
-                    </div>
-                    <div class="kontribusi-summary-value-wrap-4">
-                        <div class="kontribusi-summary-value">
+                    <div class="kontribusi-summary-row last">
+                        <span class="kontribusi-summary-label">Rata-rata per Cabang</span>
+                        <span class="kontribusi-summary-value">
                             Rp{{ number_format($rataRataCabang, 0, ',', '.') }}
-                        </div>
+                        </span>
                     </div>
                 </div>
             </div>
 
         </div>
     </div>
+    @endif
+
 </div>
-
-@endsection
-
-@section('scripts')
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
 <script>
-
 document.addEventListener('DOMContentLoaded', function () {
+    if (typeof lucide !== 'undefined') lucide.createIcons();
 
-    const ctx = document.getElementById('edasChart');
+    @if(!$isEmpty)
+    const labels  = @json($chartLabels);
+    const sales   = @json($chartSales);
+    const colors  = @json($chartColors);
 
-    console.log(ctx);
+    // Hitung total untuk persentase
+    const total = sales.reduce((a, b) => a + b, 0);
 
-    new Chart(ctx, {
+    Chart.register(ChartDataLabels);
 
-        type: 'bar',
-
+    new Chart(document.getElementById('edasChart'), {
+        type: 'doughnut',
         data: {
-
-            labels: @json($chartLabels),
-
+            labels: labels,
             datasets: [{
-                label: 'Score EDAS',
-                data: @json($chartScores),
-                borderWidth: 1
+                data: sales,
+                backgroundColor: colors,
+                borderWidth: 2,
+                borderColor: '#ffffff',
+                hoverOffset: 8,
             }]
         },
-
         options: {
-
-            indexAxis: 'y',
-
             responsive: true,
-
             maintainAspectRatio: false,
-
+            cutout: '68%',
             plugins: {
-                legend: {
-                    display: false
-                }
-            },
-
-            scales: {
-                x: {
-                    beginAtZero: true,
-                    max: 1
+                legend: { display: false },
+                tooltip: {
+                    callbacks: {
+                        label: function(ctx) {
+                            const pct = ((ctx.raw / total) * 100).toFixed(1);
+                            return ctx.label + ': ' + pct + '% (Rp' + ctx.raw.toLocaleString('id-ID') + ')';
+                        }
+                    }
+                },
+                datalabels: {
+                    color: '#ffffff',
+                    font: {
+                        weight: 'bold',
+                        size: 12,
+                        family: "'Plus Jakarta Sans', sans-serif",
+                    },
+                    formatter: function(value, ctx) {
+                        const pct = ((value / total) * 100);
+                        // Sembunyikan label jika segmen terlalu kecil (< 4%)
+                        if (pct < 4) return '';
+                        return pct.toFixed(1) + '%';
+                    },
+                    // Posisi label di tengah segmen
+                    anchor: 'center',
+                    align: 'center',
+                    offset: 0,
+                    // Shadow agar teks terbaca di semua warna
+                    textShadowBlur: 4,
+                    textShadowColor: 'rgba(0,0,0,0.3)',
                 }
             }
         }
     });
-
+    @endif
 });
-
 </script>
 
 @endsection

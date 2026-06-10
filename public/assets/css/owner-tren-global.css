@@ -1,96 +1,162 @@
+/* --- CONTAINER UTAMA --- */
 .tren-global-content {
-    padding: 28px;
-    width: 100%;
+    padding: 32px 40px;
+    background-color: #f1f5f9;
+    min-height: 100vh;
+    font-family: 'Plus Jakarta Sans', sans-serif;
 }
 
-/* HEADER */
-
+/* --- HEADER --- */
 .tren-global-header {
     display: flex;
     flex-direction: column;
-    gap: 5px;
-    margin-bottom: 24px;
+    gap: 4px;
+    margin-bottom: 32px;
 }
 
 .tren-global-title {
-    font-size: 22px;
+    font-size: 28px;
+    font-weight: 800;
+    color: #0f172a;
+    letter-spacing: -0.5px;
+}
+
+.tren-global-subtitle {
+    font-size: 15px;
+    font-weight: 500;
+    color: #64748b;
+}
+
+/* --- CHART CARD --- */
+.tren-global-chart-card {
+    background: #ffffff;
+    border-radius: 20px;
+    border: 1px solid #e2e8f0;
+    padding: 32px;
+    margin-bottom: 24px;
+    box-shadow: 0px 4px 12px -4px rgba(0,0,0,0.03);
+}
+
+.tren-global-chart-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.tren-global-card-title {
+    font-size: 18px;
     font-weight: 800;
     color: #0f172a;
 }
 
-.tren-global-subtitle {
+.tren-global-year-select {
+    min-width: 160px;
+    height: 42px;
+    border: 1px solid #cbd5e1;
+    border-radius: 12px;
+    padding: 0 16px;
+    background: #f8fafc;
+    font-family: inherit;
     font-size: 14px;
-    color: #64748b;
-}
-
-/* CARD */
-
-.tren-global-chart-card {
-    background: white;
-    border-radius: 16px;
-    border: 1px solid #e2e8f0;
-    padding: 24px;
-    margin-bottom: 20px;
-    box-shadow: 0px 2px 8px #0000000a;
-}
-
-.tren-global-card-title {
-    font-size: 16px;
     font-weight: 700;
     color: #0f172a;
+    cursor: pointer;
+    outline: none;
+    transition: all 0.2s ease;
 }
 
-.tren-global-chart-placeholder {
-    margin-top: 20px;
-    height: 300px;
-    background: #f8fafc;
-    border-radius: 12px;
+.tren-global-year-select:hover,
+.tren-global-year-select:focus {
+    border-color: #314cff;
+    box-shadow: 0 0 0 3px rgba(49, 76, 255, 0.1);
 }
 
-/* BOTTOM CARD */
+.tren-global-chart-wrapper {
+    position: relative;
+    width: 100%;
+    height: 350px;
+}
 
+/* --- BOTTOM CARDS (Grid 2 Kolom) --- */
 .tren-global-bottom-cards {
-    display: flex;
-    gap: 20px;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
 }
 
 .tren-global-info-card {
-    flex: 1;
-    background: white;
-    border-radius: 16px;
+    background: #ffffff;
+    border-radius: 20px;
     border: 1px solid #e2e8f0;
     padding: 24px;
-    box-shadow: 0px 2px 8px #0000000a;
-
+    box-shadow: 0px 4px 12px -4px rgba(0,0,0,0.03);
     display: flex;
     flex-direction: column;
     gap: 16px;
 }
 
 .tren-global-info-title {
-    font-size: 15px;
-    font-weight: 700;
+    font-size: 16px;
+    font-weight: 800;
     color: #0f172a;
+    margin-bottom: 4px;
 }
 
-/* COMPARISON */
+/* --- TOGGLE PER BULAN / PER TAHUN (BARU) --- */
+.perbandingan-toggle {
+    display: flex;
+    gap: 4px;
+    background: #f1f5f9;
+    border-radius: 12px;
+    padding: 4px;
+    margin-bottom: 4px;
+}
 
+.toggle-btn {
+    flex: 1;
+    padding: 7px 12px;
+    border: none;
+    border-radius: 9px;
+    font-size: 13px;
+    font-weight: 700;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    cursor: pointer;
+    background: transparent;
+    color: #64748b;
+    transition: all 0.2s ease;
+}
+
+.toggle-btn.active {
+    background: #ffffff;
+    color: #314cff;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+}
+
+.toggle-btn:hover:not(.active) {
+    color: #0f172a;
+    background: #e8ecf0;
+}
+
+/* --- PERBANDINGAN PENJUALAN --- */
 .tren-global-comparison {
     background: #f8fafc;
     border: 1px solid #e2e8f0;
-    border-radius: 12px;
-    padding: 16px;
+    border-radius: 16px;
+    padding: 20px;
 }
 
 .tren-global-comparison.active {
     background: #eef1ff;
-    border-color: #d8dfff;
+    border-color: #c7d2fe;
 }
 
 .tren-global-comparison-title {
     font-size: 13px;
-    font-weight: 600;
+    font-weight: 700;
     color: #314cff;
+    margin-bottom: 8px;
 }
 
 .tren-global-comparison-title.gray {
@@ -98,24 +164,35 @@
 }
 
 .tren-global-comparison-value {
-    height: 30px;
-    margin-top: 8px;
+    font-size: 24px;
+    font-weight: 800;
+    color: #0f172a;
 }
-
-/* ALERT */
 
 .tren-global-alert {
-    height: 68px;
-    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    padding: 16px 20px;
+    border-radius: 16px;
     background: #fef2f2;
     border: 1px solid #fecaca;
+    margin-top: auto;
 }
 
-/* INSIGHT */
+.tren-global-alert-text {
+    font-size: 14px;
+    font-weight: 700;
+    color: #dc2626;
+    line-height: 1.5;
+    display: flex;              /* TAMBAH INI */
+    align-items: center;        /* TAMBAH INI */
+    gap: 6px;
+}
 
+/* --- INSIGHT PENJUALAN --- */
 .tren-global-insight {
-    border-radius: 12px;
-    padding: 16px;
+    border-radius: 16px;
+    padding: 20px;
 }
 
 .tren-global-insight.warning {
@@ -131,55 +208,98 @@
 .tren-global-insight-top {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 12px;
+    margin-bottom: 16px;
 }
 
 .tren-global-icon {
-    width: 30px;
-    height: 30px;
-    border-radius: 8px;
-
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
+    flex-shrink: 0;
 }
 
-.tren-global-icon img {
-    width: 15px;
-    height: 15px;
-}
-
-.tren-global-icon.orange {
-    background: #d97706;
-}
-
-.tren-global-icon.red {
-    background: #dc2626;
-}
+.tren-global-icon.orange { background: #f59e0b; }
+.tren-global-icon.red    { background: #ef4444; }
 
 .tren-global-insight-text {
-    font-size: 13px;
-    font-weight: 700;
+    font-size: 14px;
+    font-weight: 800;
 }
 
-.orange-text {
-    color: #92400e;
+.orange-text { color: #b45309; }
+.red-text    { color: #be123c; }
+
+.tren-global-insight-detail {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
 }
 
-.red-text {
-    color: #9f1239;
+.tren-global-insight-month {
+    font-size: 22px;
+    font-weight: 900;
+    color: #0f172a;
 }
 
-/* AVERAGE */
+.tren-global-insight-sales {
+    font-size: 15px;
+    font-weight: 600;
+    color: #64748b;
+}
 
+/* --- GROWTH BULANAN --- */
 .tren-global-average {
-    background: #eef1ff;
-    border: 1px solid #d8dfff;
-    border-radius: 12px;
-    padding: 16px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    padding: 20px;
+    margin-top: auto;
 }
 
-.tren-global-average-value {
-    height: 27px;
-    margin-top: 8px;
+.tren-global-average-title {
+    font-size: 14px;
+    font-weight: 800;
+    color: #0f172a;
+    margin-bottom: 16px;
+}
+
+.tren-global-average-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+}
+
+.growth-badge {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 4px;
+    border-radius: 10px;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    font-size: 11px;
+    font-weight: 700;
+    text-align: center;
+}
+
+.growth-badge .month { color: #64748b; margin-bottom: 2px; }
+.growth-badge.positive .val { color: #16a34a; }
+.growth-badge.negative .val { color: #dc2626; }
+.growth-badge.neutral .val  { color: #94a3b8; }
+
+/* --- RESPONSIVE --- */
+@media (max-width: 992px) {
+    .tren-global-bottom-cards  { grid-template-columns: 1fr; }
+    .tren-global-average-grid  { grid-template-columns: repeat(6, 1fr); }
+}
+
+@media (max-width: 576px) {
+    .tren-global-content       { padding: 20px 16px; }
+    .tren-global-average-grid  { grid-template-columns: repeat(3, 1fr); }
+    .perbandingan-toggle       { border-radius: 10px; }
 }

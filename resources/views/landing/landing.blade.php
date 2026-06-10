@@ -129,7 +129,7 @@
             </div>
             
             <h1 class="text-5xl md:text-[54px] font-black tracking-tight leading-[1.15] text-slate-900">
-                Monitor Your Sales Performance in <span class="text-brand-blue">Real-Time</span>
+                Pantau performa penjualan anda secara <span class="text-brand-blue">Real-Time</span>
             </h1>
             
             <p class="text-slate-500 text-lg leading-relaxed max-w-lg">

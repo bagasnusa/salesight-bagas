@@ -9,6 +9,7 @@ class HasilEdasModel extends Model
     protected $table = 'hasil_edas';
 
     protected $fillable = [
+        'user_id',
         'shopping_mall',
         'periode_year',
 

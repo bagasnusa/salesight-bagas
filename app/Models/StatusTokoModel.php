@@ -9,7 +9,7 @@ class StatusTokoModel extends Model
     protected $table = 'status_toko';
 
     protected $fillable = [
-
+        'user_id',
         'shopping_mall',
 
         'year_awal',

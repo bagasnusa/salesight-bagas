@@ -2,480 +2,318 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
-
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-
 use App\Models\HasilEdasModel;
 use App\Models\SalesModel;
+use App\Models\Branch;
+use Illuminate\Support\Facades\Auth;
 
 class KontribusiTokoController extends Controller
 {
-    public function prosesEdas($tahun) //Untuk menjalankan metode edas
+    // =============================================
+    // PROSES EDAS — bisa dipanggil manual via route
+    // =============================================
+    public function prosesEdas($tahun)
     {
-        /*
-        |--------------------------------------------------------------------------
-        | Hapus data EDAS tahun yang sama (optional)
-        |--------------------------------------------------------------------------
-        */
-        HasilEdasModel::where('periode_year', $tahun)->delete();
+        $userId    = Auth::user()->user_id;
+        $branchIds = Branch::where('user_id', $userId)->pluck('branch_id');
 
-        /*
-        |--------------------------------------------------------------------------
-        | Ambil data dan agregasi per toko
-        |--------------------------------------------------------------------------
-        */
+        HasilEdasModel::where('user_id', $userId)
+            ->where('periode_year', $tahun)
+            ->delete();
+
         $data = SalesModel::select(
-            'shopping_mall',
-
-            DB::raw('SUM(total_sales) as total_sales'),
-
-            DB::raw('COUNT(invoice_no) as total_transaction'),
-
-            DB::raw('SUM(quantity) as total_quantity'),
-
-            DB::raw('AVG(total_sales) as average_sales')
-        )
+                'branch_id',
+                DB::raw('SUM(total_sales) as total_sales'),
+                DB::raw('COUNT(invoice_no) as total_transaction'),
+                DB::raw('SUM(quantity) as total_quantity'),
+                DB::raw('AVG(total_sales) as average_sales')
+            )
+            ->whereIn('branch_id', $branchIds)
             ->whereYear('invoice_date', $tahun)
-            ->groupBy('shopping_mall')
+            ->groupBy('branch_id')
             ->get();
 
-        /*
-        |--------------------------------------------------------------------------
-        | Validasi data kosong
-        |--------------------------------------------------------------------------
-        */
         if ($data->count() == 0) {
-            return response()->json([
-                'message' => 'Data tidak ditemukan'
-            ]);
+            return response()->json(['message' => 'Data tidak ditemukan']);
         }
 
-        /*
-        |--------------------------------------------------------------------------
-        | Hitung rata-rata tiap kriteria (AV)
-        |--------------------------------------------------------------------------
-        */
-        $avg_sales = $data->avg('total_sales');
+        // Map branch_id ke nama
+        $branchNames = Branch::whereIn('branch_id', $branchIds)
+            ->pluck('name', 'branch_id');
 
+        $avg_sales       = $data->avg('total_sales');
         $avg_transaction = $data->avg('total_transaction');
+        $avg_quantity    = $data->avg('total_quantity');
+        $avg_avg_sales   = $data->avg('average_sales');
 
-        $avg_quantity = $data->avg('total_quantity');
-
-        $avg_average_sales = $data->avg('average_sales');
-
-        /*
-        |--------------------------------------------------------------------------
-        | Bobot kriteria
-        |--------------------------------------------------------------------------
-        */
         $weights = [
-            'sales' => 0.4,
-            'transaction' => 0.3,
-            'quantity' => 0.2,
-            'average_sales' => 0.1
+            'sales'        => 0.4,
+            'transaction'  => 0.3,
+            'quantity'     => 0.2,
+            'average_sales'=> 0.1,
         ];
 
-        /*
-        |--------------------------------------------------------------------------
-        | Proses EDAS
-        |--------------------------------------------------------------------------
-        */
         $results = [];
 
         foreach ($data as $item) {
+            $pda_sales       = max(0, ($item->total_sales - $avg_sales) / $avg_sales);
+            $pda_transaction = max(0, ($item->total_transaction - $avg_transaction) / $avg_transaction);
+            $pda_quantity    = max(0, ($item->total_quantity - $avg_quantity) / $avg_quantity);
+            $pda_avg_sales   = max(0, ($item->average_sales - $avg_avg_sales) / $avg_avg_sales);
 
-            /*
-            |--------------------------------------------------------------------------
-            | PDA (Positive Distance from Average)
-            |--------------------------------------------------------------------------
-            */
+            $nda_sales       = max(0, ($avg_sales - $item->total_sales) / $avg_sales);
+            $nda_transaction = max(0, ($avg_transaction - $item->total_transaction) / $avg_transaction);
+            $nda_quantity    = max(0, ($avg_quantity - $item->total_quantity) / $avg_quantity);
+            $nda_avg_sales   = max(0, ($avg_avg_sales - $item->average_sales) / $avg_avg_sales);
 
-            $pda_sales = max(
-                0,
-                ($item->total_sales - $avg_sales)
-                / $avg_sales
-            );
+            $sp = ($pda_sales * $weights['sales']) + ($pda_transaction * $weights['transaction'])
+                + ($pda_quantity * $weights['quantity']) + ($pda_avg_sales * $weights['average_sales']);
 
-            $pda_transaction = max(
-                0,
-                ($item->total_transaction - $avg_transaction)
-                / $avg_transaction
-            );
-
-            $pda_quantity = max(
-                0,
-                ($item->total_quantity - $avg_quantity)
-                / $avg_quantity
-            );
-
-            $pda_average_sales = max(
-                0,
-                ($item->average_sales - $avg_average_sales)
-                / $avg_average_sales
-            );
-
-            /*
-            |--------------------------------------------------------------------------
-            | NDA (Negative Distance from Average)
-            |--------------------------------------------------------------------------
-            */
-
-            $nda_sales = max(
-                0,
-                ($avg_sales - $item->total_sales)
-                / $avg_sales
-            );
-
-            $nda_transaction = max(
-                0,
-                ($avg_transaction - $item->total_transaction)
-                / $avg_transaction
-            );
-
-            $nda_quantity = max(
-                0,
-                ($avg_quantity - $item->total_quantity)
-                / $avg_quantity
-            );
-
-            $nda_average_sales = max(
-                0,
-                ($avg_average_sales - $item->average_sales)
-                / $avg_average_sales
-            );
-
-            /*
-            |--------------------------------------------------------------------------
-            | Hitung SP
-            |--------------------------------------------------------------------------
-            */
-
-            $sp =
-                ($pda_sales * $weights['sales']) +
-                ($pda_transaction * $weights['transaction']) +
-                ($pda_quantity * $weights['quantity']) +
-                ($pda_average_sales * $weights['average_sales']);
-
-            /*
-            |--------------------------------------------------------------------------
-            | Hitung SN
-            |--------------------------------------------------------------------------
-            */
-
-            $sn =
-                ($nda_sales * $weights['sales']) +
-                ($nda_transaction * $weights['transaction']) +
-                ($nda_quantity * $weights['quantity']) +
-                ($nda_average_sales * $weights['average_sales']);
-
-            /*
-            |--------------------------------------------------------------------------
-            | Simpan sementara
-            |--------------------------------------------------------------------------
-            */
+            $sn = ($nda_sales * $weights['sales']) + ($nda_transaction * $weights['transaction'])
+                + ($nda_quantity * $weights['quantity']) + ($nda_avg_sales * $weights['average_sales']);
 
             $results[] = [
-
-                'shopping_mall' => $item->shopping_mall,
-
-                'periode_year' => $tahun,
-
-                'total_sales' => $item->total_sales,
-
-                'total_transaction' => $item->total_transaction,
-
-                'total_quantity' => $item->total_quantity,
-
-                'average_sales' => $item->average_sales,
-
-                'pda_sales' => $pda_sales,
-                'pda_transaction' => $pda_transaction,
-                'pda_quantity' => $pda_quantity,
-                'pda_average_sales' => $pda_average_sales,
-
-                'nda_sales' => $nda_sales,
-                'nda_transaction' => $nda_transaction,
-                'nda_quantity' => $nda_quantity,
-                'nda_average_sales' => $nda_average_sales,
-
-                'sp' => $sp,
-
-                'sn' => $sn
+                'branch_id'          => $item->branch_id,
+                'shopping_mall'      => $branchNames[$item->branch_id] ?? 'Unknown',
+                'periode_year'       => $tahun,
+                'total_sales'        => $item->total_sales,
+                'total_transaction'  => $item->total_transaction,
+                'total_quantity'     => $item->total_quantity,
+                'average_sales'      => $item->average_sales,
+                'pda_sales'          => $pda_sales,
+                'pda_transaction'    => $pda_transaction,
+                'pda_quantity'       => $pda_quantity,
+                'pda_average_sales'  => $pda_avg_sales,
+                'nda_sales'          => $nda_sales,
+                'nda_transaction'    => $nda_transaction,
+                'nda_quantity'       => $nda_quantity,
+                'nda_average_sales'  => $nda_avg_sales,
+                'sp'                 => $sp,
+                'sn'                 => $sn,
             ];
         }
 
-        /*
-        |--------------------------------------------------------------------------
-        | Cari nilai max SP dan max SN
-        |--------------------------------------------------------------------------
-        */
-
         $maxSp = collect($results)->max('sp');
-
         $maxSn = collect($results)->max('sn');
 
-        /*
-        |--------------------------------------------------------------------------
-        | Hitung NSP, NSN, dan Appraisal Score
-        |--------------------------------------------------------------------------
-        */
-
         foreach ($results as &$result) {
-
-            /*
-            |--------------------------------------------------------------------------
-            | NSP
-            |--------------------------------------------------------------------------
-            */
-
-            if ($maxSp == 0) {
-                $nsp = 0;
-            } else {
-                $nsp = $result['sp'] / $maxSp;
-            }
-
-            /*
-            |--------------------------------------------------------------------------
-            | NSN
-            |--------------------------------------------------------------------------
-            */
-
-            if ($maxSn == 0) {
-                $nsn = 1;
-            } else {
-                $nsn = 1 - ($result['sn'] / $maxSn);
-            }
-
-            /*
-            |--------------------------------------------------------------------------
-            | Appraisal Score
-            |--------------------------------------------------------------------------
-            */
-
-            $as = ($nsp + $nsn) / 2;
-
-            $result['nsp'] = $nsp;
-            $result['nsn'] = $nsn;
-
-            $result['appraisal_score'] = $as;
+            $nsp = $maxSp > 0 ? $result['sp'] / $maxSp : 0;
+            $nsn = $maxSn > 0 ? 1 - ($result['sn'] / $maxSn) : 1;
+            $result['nsp']            = $nsp;
+            $result['nsn']            = $nsn;
+            $result['appraisal_score']= ($nsp + $nsn) / 2;
         }
 
-        /*
-        |--------------------------------------------------------------------------
-        | Sorting ranking
-        |--------------------------------------------------------------------------
-        */
-
-        usort($results, function ($a, $b) {
-            return $b['appraisal_score']
-                <=> $a['appraisal_score'];
-        });
-
-        /*
-        |--------------------------------------------------------------------------
-        | Simpan ke database
-        |--------------------------------------------------------------------------
-        */
+        usort($results, fn($a, $b) => $b['appraisal_score'] <=> $a['appraisal_score']);
 
         foreach ($results as $index => $result) {
-
             HasilEdasModel::create([
-
-                'shopping_mall' => $result['shopping_mall'],
-
-                'periode_year' => $result['periode_year'],
-
-                'total_sales' => $result['total_sales'],
-
-                'total_transaction' => $result['total_transaction'],
-
-                'total_quantity' => $result['total_quantity'],
-
-                'average_sales' => $result['average_sales'],
-
-                'pda_sales' => $result['pda_sales'],
-                'pda_transaction' => $result['pda_transaction'],
-                'pda_quantity' => $result['pda_quantity'],
-                'pda_average_sales' => $result['pda_average_sales'],
-
-                'nda_sales' => $result['nda_sales'],
-                'nda_transaction' => $result['nda_transaction'],
-                'nda_quantity' => $result['nda_quantity'],
-                'nda_average_sales' => $result['nda_average_sales'],
-
-                'sp' => $result['sp'],
-                'sn' => $result['sn'],
-
-                'nsp' => $result['nsp'],
-                'nsn' => $result['nsn'],
-
-                'appraisal_score' => $result['appraisal_score'],
-
-                'ranking_position' => $index + 1
+                'user_id'            => $userId,
+                'shopping_mall'      => $result['shopping_mall'],
+                'periode_year'       => $result['periode_year'],
+                'total_sales'        => $result['total_sales'],
+                'total_transaction'  => $result['total_transaction'],
+                'total_quantity'     => $result['total_quantity'],
+                'average_sales'      => $result['average_sales'],
+                'pda_sales'          => $result['pda_sales'],
+                'pda_transaction'    => $result['pda_transaction'],
+                'pda_quantity'       => $result['pda_quantity'],
+                'pda_average_sales'  => $result['pda_average_sales'],
+                'nda_sales'          => $result['nda_sales'],
+                'nda_transaction'    => $result['nda_transaction'],
+                'nda_quantity'       => $result['nda_quantity'],
+                'nda_average_sales'  => $result['nda_average_sales'],
+                'sp'                 => $result['sp'],
+                'sn'                 => $result['sn'],
+                'nsp'                => $result['nsp'],
+                'nsn'                => $result['nsn'],
+                'appraisal_score'    => $result['appraisal_score'],
+                'ranking_position'   => $index + 1,
             ]);
         }
 
-        /*
-        |--------------------------------------------------------------------------
-        | Return response
-        |--------------------------------------------------------------------------
-        */
-
         return response()->json([
             'message' => 'Perhitungan EDAS berhasil',
-            'data' => $results
+            'data'    => $results,
         ]);
     }
 
-    public function kontribusiToko(Request $request) // Untuk menampilkan hasil edas pada menu kontribusi toko
+    // =============================================
+    // AUTO EDAS — dipanggil otomatis dari view
+    // =============================================
+    private function autoEdasUntukSemua(int $userId): void
     {
-        $tahun = $request->tahun ?? 2022;
+        $branchIds = Branch::where('user_id', $userId)->pluck('branch_id');
 
-        /*
-        |--------------------------------------------------------------------------
-        | Ambil data EDAS berdasarkan tahun
-        |--------------------------------------------------------------------------
-        */
+        $tahunList = SalesModel::whereIn('branch_id', $branchIds)
+            ->selectRaw('YEAR(invoice_date) as tahun')
+            ->distinct()->pluck('tahun')->toArray();
 
-        $tahunList = HasilEdasModel::select('periode_year')
-            ->distinct()
-            ->orderBy('periode_year', 'desc')
-            ->pluck('periode_year');
+        foreach ($tahunList as $tahun) {
+            $sudahAda = HasilEdasModel::where('user_id', $userId)
+                ->where('periode_year', $tahun)->exists();
 
+            if (!$sudahAda) {
+                $this->prosesEdasInternal($userId, $branchIds, $tahun);
+            }
+        }
+    }
 
-        $data = HasilEdasModel::where(
-            'periode_year',
-            $tahun
-        )
-            ->orderBy('ranking_position', 'asc')
+    private function prosesEdasInternal(int $userId, $branchIds, $tahun): void
+    {
+        $data = SalesModel::select(
+                'branch_id',
+                DB::raw('SUM(total_sales) as total_sales'),
+                DB::raw('COUNT(invoice_no) as total_transaction'),
+                DB::raw('SUM(quantity) as total_quantity'),
+                DB::raw('AVG(total_sales) as average_sales')
+            )
+            ->whereIn('branch_id', $branchIds)
+            ->whereYear('invoice_date', $tahun)
+            ->groupBy('branch_id')
             ->get();
 
-        /*
-        |--------------------------------------------------------------------------
-        | Total sales keseluruhan
-        |--------------------------------------------------------------------------
-        */
+        if ($data->count() == 0) return;
+
+        $branchNames = Branch::whereIn('branch_id', $branchIds)
+            ->pluck('name', 'branch_id');
+
+        $avg_sales       = $data->avg('total_sales');
+        $avg_transaction = $data->avg('total_transaction');
+        $avg_quantity    = $data->avg('total_quantity');
+        $avg_avg_sales   = $data->avg('average_sales');
+
+        $weights = ['sales' => 0.4, 'transaction' => 0.3, 'quantity' => 0.2, 'average_sales' => 0.1];
+
+        $results = [];
+
+        foreach ($data as $item) {
+            $pda_sales       = max(0, ($item->total_sales - $avg_sales) / $avg_sales);
+            $pda_transaction = max(0, ($item->total_transaction - $avg_transaction) / $avg_transaction);
+            $pda_quantity    = max(0, ($item->total_quantity - $avg_quantity) / $avg_quantity);
+            $pda_avg_sales   = max(0, ($item->average_sales - $avg_avg_sales) / $avg_avg_sales);
+
+            $nda_sales       = max(0, ($avg_sales - $item->total_sales) / $avg_sales);
+            $nda_transaction = max(0, ($avg_transaction - $item->total_transaction) / $avg_transaction);
+            $nda_quantity    = max(0, ($avg_quantity - $item->total_quantity) / $avg_quantity);
+            $nda_avg_sales   = max(0, ($avg_avg_sales - $item->average_sales) / $avg_avg_sales);
+
+            $sp = ($pda_sales * $weights['sales']) + ($pda_transaction * $weights['transaction'])
+                + ($pda_quantity * $weights['quantity']) + ($pda_avg_sales * $weights['average_sales']);
+
+            $sn = ($nda_sales * $weights['sales']) + ($nda_transaction * $weights['transaction'])
+                + ($nda_quantity * $weights['quantity']) + ($nda_avg_sales * $weights['average_sales']);
+
+            $results[] = [
+                'shopping_mall'     => $branchNames[$item->branch_id] ?? 'Unknown',
+                'total_sales'       => $item->total_sales,
+                'total_transaction' => $item->total_transaction,
+                'total_quantity'    => $item->total_quantity,
+                'average_sales'     => $item->average_sales,
+                'pda_sales'         => $pda_sales, 'pda_transaction' => $pda_transaction,
+                'pda_quantity'      => $pda_quantity, 'pda_average_sales' => $pda_avg_sales,
+                'nda_sales'         => $nda_sales, 'nda_transaction' => $nda_transaction,
+                'nda_quantity'      => $nda_quantity, 'nda_average_sales' => $nda_avg_sales,
+                'sp' => $sp, 'sn' => $sn,
+            ];
+        }
+
+        $maxSp = collect($results)->max('sp');
+        $maxSn = collect($results)->max('sn');
+
+        foreach ($results as &$result) {
+            $nsp = $maxSp > 0 ? $result['sp'] / $maxSp : 0;
+            $nsn = $maxSn > 0 ? 1 - ($result['sn'] / $maxSn) : 1;
+            $result['nsp'] = $nsp;
+            $result['nsn'] = $nsn;
+            $result['appraisal_score'] = ($nsp + $nsn) / 2;
+        }
+
+        usort($results, fn($a, $b) => $b['appraisal_score'] <=> $a['appraisal_score']);
+
+        HasilEdasModel::where('user_id', $userId)->where('periode_year', $tahun)->delete();
+
+        foreach ($results as $index => $result) {
+            HasilEdasModel::create(array_merge($result, [
+                'user_id'          => $userId,
+                'periode_year'     => $tahun,
+                'ranking_position' => $index + 1,
+            ]));
+        }
+    }
+
+    // =============================================
+    // MAIN VIEW
+    // =============================================
+    public function kontribusiToko(Request $request)
+    {
+        $userId    = Auth::user()->user_id;
+        $branchIds = Branch::where('user_id', $userId)->pluck('branch_id');
+
+        $adaData = SalesModel::whereIn('branch_id', $branchIds)->exists();
+
+        if (!$adaData) {
+            return view('owner.kontribusi-toko', [
+                'isEmpty'       => true,
+                'tahun'         => date('Y'),
+                'tahunList'     => collect(),
+                'data'          => collect(),
+                'best'          => null,
+                'worst'         => null,
+                'totalSales'    => 0,
+                'jumlahCabang'  => 0,
+                'rataRataCabang'=> 0,
+                'chartLabels'   => [],
+                'chartScores'   => [],
+                'chartColors'   => [],
+                'chartSales'    => [],
+            ]);
+        }
+
+        // EDAS otomatis di background
+        $this->autoEdasUntukSemua($userId);
+
+        $tahunList = HasilEdasModel::where('user_id', $userId)
+            ->select('periode_year')->distinct()
+            ->orderBy('periode_year', 'desc')->pluck('periode_year');
+
+        $tahun = $request->tahun ?? $tahunList->first() ?? date('Y');
+
+        $data = HasilEdasModel::where('user_id', $userId)
+            ->where('periode_year', $tahun)
+            ->orderBy('ranking_position')->get();
 
         $totalSales = $data->sum('total_sales');
 
-
-        /*
-        |--------------------------------------------------------------------------
-        | Hitung persentase kontribusi
-        |--------------------------------------------------------------------------
-        */
-
         foreach ($data as $item) {
-
-            if ($totalSales > 0) {
-
-                $item->persentase =
-                    ($item->total_sales / $totalSales) * 100;
-
-            } else {
-
-                $item->persentase = 0;
-            }
+            $item->persentase = $totalSales > 0
+                ? ($item->total_sales / $totalSales) * 100 : 0;
         }
 
-        /*
-        |--------------------------------------------------------------------------
-        | Toko terbaik
-        |--------------------------------------------------------------------------
-        */
-
-        $best = $data->first();
-
-        /*
-        |--------------------------------------------------------------------------
-        | Toko terburuk
-        |--------------------------------------------------------------------------
-        */
-
+        $best  = $data->first();
         $worst = $data->last();
 
-        /*
-        |--------------------------------------------------------------------------
-        | Ringkasan
-        |--------------------------------------------------------------------------
-        */
+        $jumlahCabang   = $data->count();
+        $rataRataCabang = $jumlahCabang > 0 ? $totalSales / $jumlahCabang : 0;
 
-        $jumlahCabang = $data->count();
+        $palette = [
+            '#314cff','#10b981','#f59e0b','#ef4444',
+            '#8b5cf6','#06b6d4','#ec4899','#84cc16',
+        ];
 
-        $rataRataCabang =
-            $jumlahCabang > 0
-            ? $totalSales / $jumlahCabang
-            : 0;
+        $chartLabels = $data->pluck('shopping_mall')->toArray();
+        $chartScores = $data->pluck('appraisal_score')->map(fn($s) => round($s, 4))->toArray();
+        $chartSales  = $data->pluck('total_sales')->map(fn($s) => round($s, 0))->toArray();
+        $chartColors = collect($chartLabels)->keys()
+            ->map(fn($i) => $palette[$i % count($palette)])->toArray();
 
-        /*
-        |--------------------------------------------------------------------------
-        | Tampilan Visualisasi
-        |--------------------------------------------------------------------------
-        */
-
-        $chartLabels = $data->pluck('shopping_mall');
-        $chartScores = $data->pluck('appraisal_score');
-
-        $chartLabels = $data
-            ->pluck('shopping_mall')
-            ->toArray();
-
-        $chartScores = $data
-            ->pluck('appraisal_score')
-            ->map(function ($score) {
-                return round($score, 4);
-            })
-            ->toArray();
-
-        /*
-        |--------------------------------------------------------------------------
-        | Return view
-        |--------------------------------------------------------------------------
-        */
-
-        return view(
-            'owner.kontribusi-toko',
-            compact(
-                'data',
-                'best',
-                'worst',
-                'totalSales',
-                'jumlahCabang',
-                'rataRataCabang',
-                'tahun',
-                'tahunList',
-                'chartLabels',
-                'chartScores'
-            )
-        );
-    }
-
-    public function trenPenjualanToko(Request $request) //Untuk menampilkan hasil edas pada menu tren penjualan toko
-    {
-        $tahun = $request->tahun ?? 2023;
-
-        $toko = $request->toko ?? 'all';
-
-        $tahunList = SalesModel::selectRaw('YEAR(invoice_date) as tahun')
-            ->distinct()
-            ->orderBy('tahun', 'desc')
-            ->pluck('tahun');
-
-        $tokoList = SalesModel::select('shopping_mall')
-            ->distinct()
-            ->orderBy('shopping_mall')
-            ->pluck('shopping_mall');
-
-        return view(
-            'owner.tren-penjualan-toko',
-            compact(
-                'tahun',
-                'toko',
-                'tahunList',
-                'tokoList'
-            )
-        );
+        return view('owner.kontribusi-toko', compact(
+            'data', 'best', 'worst', 'totalSales',
+            'jumlahCabang', 'rataRataCabang',
+            'tahun', 'tahunList',
+            'chartLabels', 'chartScores', 'chartSales', 'chartColors'
+        ) + ['isEmpty' => false]);
     }
 }

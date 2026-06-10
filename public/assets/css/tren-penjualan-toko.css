@@ -1,753 +1,281 @@
+/* ===== CONTAINER ===== */
 .tren-toko-content {
-  display: flex;
-  flex-direction: column;
-  width: 1012px;
-  min-height: 1044px;
-  align-items: flex-start;
-  padding: 28px 28px 0px;
-  position: relative;
+    padding: 32px 40px;
+    background: #f1f5f9;
+    min-height: 100vh;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
 }
 
-.tren-toko-section {
-  position: relative;
-  align-self: stretch;
-  width: 100%;
-  height: 976px;
-}
-
-/* Header */
-.tren-toko-page-header {
-  display: flex;
-  flex-direction: column;
-  width: 231px;
-  height: 59px;
-  align-items: flex-start;
-  gap: 5px;
-  position: absolute;
-  top: 0;
-  left: 0;
-}
-
-.tren-toko-heading {
-  position: relative;
-  align-self: stretch;
-  width: 100%;
-  height: 33px;
-}
+/* ===== HEADER ===== */
+.tren-toko-page-header { display: flex; flex-direction: column; gap: 4px; }
 
 .tren-toko-title {
-  position: absolute;
-  top: 0;
-  left: 0;
-  font-family: "Inter-ExtraBold", Helvetica;
-  font-weight: 800;
-  color: #0f172a;
-  font-size: 22px;
-  letter-spacing: -0.4px;
-  line-height: 33px;
-  white-space: nowrap;
-}
-
-.tren-toko-paragraph {
-  position: relative;
-  align-self: stretch;
-  width: 100%;
-  height: 21px;
+    font-size: 28px; font-weight: 800;
+    color: #0f172a; letter-spacing: -0.5px;
 }
 
 .tren-toko-subtitle {
-  position: absolute;
-  top: 0;
-  left: 0;
-  font-family: "Inter-Medium", Helvetica;
-  font-weight: 500;
-  color: #64748b;
-  font-size: 14px;
-  letter-spacing: 0;
-  line-height: 21px;
-  white-space: nowrap;
+    font-size: 15px; font-weight: 500; color: #64748b; margin: 0;
 }
 
-/* Main Chart Card */
+/* ===== EMPTY STATE ===== */
+.tren-toko-empty-state {
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 12px; padding: 80px 24px;
+    background: #ffffff; border-radius: 20px;
+    border: 1px solid #e2e8f0; text-align: center;
+}
+
+.tren-toko-empty-title { font-size: 18px; font-weight: 700; color: #0f172a; }
+.tren-toko-empty-desc  { font-size: 14px; color: #64748b; max-width: 360px; line-height: 1.6; }
+
+/* ===== CHART CARD ===== */
 .tren-toko-card {
-  position: absolute;
-  top: 81px;
-  left: 0;
-  width: 956px;
-  height: 463px;
-  background-color: #ffffff;
-  border-radius: 16px;
-  border: 1px solid #e2e8f0;
-  box-shadow: 0px 2px 8px #0000000a;
+    background: #ffffff; border-radius: 20px;
+    border: 1px solid #e2e8f0; padding: 28px 32px;
+    box-shadow: 0 4px 12px -4px rgba(0,0,0,0.04);
 }
 
 .tren-toko-card-header {
-  position: absolute;
-  top: 23px;
-  left: 25px;
-  width: 656px;
-  height: 46px;
-  display: flex;
+    display: flex; justify-content: space-between;
+    align-items: flex-start; margin-bottom: 24px; gap: 16px;
 }
 
-.tren-toko-card-title-group {
-  display: flex;
-  width: 405px;
-  height: 46px;
-  position: relative;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 2px;
+.tren-toko-card-title   { font-size: 16px; font-weight: 800; color: #0f172a; }
+.tren-toko-card-subtitle{ font-size: 13px; font-weight: 500; color: #94a3b8; margin-top: 2px; }
+
+.tren-toko-filter-form  { display: flex; gap: 10px; align-items: center; }
+
+.tren-toko-select {
+    height: 40px; border: 1px solid #cbd5e1; border-radius: 12px;
+    padding: 0 14px; background: #f8fafc;
+    font-family: inherit; font-size: 13px; font-weight: 600;
+    color: #0f172a; cursor: pointer; outline: none; transition: all 0.2s;
 }
 
-.tren-toko-card-title-wrapper {
-  position: relative;
-  align-self: stretch;
-  width: 100%;
-  height: 24px;
+.tren-toko-select:hover,
+.tren-toko-select:focus {
+    border-color: #314cff;
+    box-shadow: 0 0 0 3px rgba(49,76,255,0.1);
 }
 
-.tren-toko-card-title {
-  position: absolute;
-  top: -1px;
-  left: 0;
-  font-family: "Inter-Bold", Helvetica;
-  font-weight: 700;
-  color: #0f172a;
-  font-size: 16px;
-  letter-spacing: 0;
-  line-height: 24px;
-  white-space: nowrap;
+.tren-toko-chart-wrapper { position: relative; width: 100%; height: 340px; }
+
+/* ===== FORWARD CHAINING PANEL ===== */
+.tren-toko-fc-panel {
+    display: flex; align-items: center;
+    justify-content: space-between; gap: 16px;
+    padding: 20px 24px;
+    background: #f0f3ff;
+    border: 1px solid #d8dfff;
+    border-radius: 16px;
+    flex-wrap: wrap;
 }
 
-.tren-toko-card-subtitle-wrapper {
-  position: relative;
-  align-self: stretch;
-  width: 100%;
-  height: 19.5px;
+.tren-toko-fc-left {
+    display: flex; align-items: flex-start; gap: 14px;
 }
 
-.tren-toko-card-subtitle {
-  position: absolute;
-  top: 0;
-  left: 0;
-  font-family: "Inter-Medium", Helvetica;
-  font-weight: 500;
-  color: #94a3b8;
-  font-size: 13px;
-  letter-spacing: 0;
-  line-height: 19.5px;
-  white-space: nowrap;
+.tren-toko-fc-title {
+    font-size: 14px; font-weight: 800; color: #0f172a; margin-bottom: 3px;
 }
 
-.tren-toko-chart-placeholder {
-  position: absolute;
-  top: 88px;
-  left: 25px;
-  width: 893px;
-  height: 317px;
-  background-color: #f0f6ff;
+.tren-toko-fc-desc {
+    font-size: 12px; color: #64748b; line-height: 1.6; max-width: 380px;
 }
 
-/* Filter Dropdown */
-.tren-toko-filter-frame {
-  position: absolute;
-  top: 23px;
-  left: 500px;
-  width: 350px;
-  height: auto;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  overflow: visible;
+.tren-toko-fc-right {
+    display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
 }
 
-.tren-toko-year-select{
-    width:180px;
-    height:42px;
-
-    border:1px solid #dbe2ea;
-    border-radius:10px;
-
-    padding:0 12px;
-    background:#fff;
+.tren-toko-fc-arrow {
+    font-size: 16px; font-weight: 700; color: #314cff;
 }
 
-.tren-toko-filter-button {
-  display: inline-flex;
-  margin-left: 18px;
-  width: 202px;
-  height: 41.5px;
-  position: relative;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 17px;
-  background-color: #ffffff;
-  border-radius: 10px;
-  border: 1px solid #e2e8f0;
+.tren-toko-fc-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 9px 20px;
+    background: #314cff; color: white;
+    border: none; border-radius: 10px;
+    font-size: 13px; font-weight: 700; font-family: inherit;
+    cursor: pointer; transition: all 0.2s;
 }
 
-.tren-toko-filter-icon {
-  position: relative;
-  width: 15px;
-  height: 15px;
+.tren-toko-fc-btn:hover    { background: #2338e0; }
+.tren-toko-fc-btn:disabled { background: #94a3b8; cursor: not-allowed; }
+
+/* ===== ATURAN FC ===== */
+.tren-toko-fc-rules {
+    background: #ffffff; border-radius: 16px;
+    border: 1px solid #e2e8f0; padding: 20px 24px;
 }
 
-.tren-toko-vector {
-  position: absolute;
-  width: 95.83%;
-  height: 95.83%;
-  top: 4.17%;
-  left: 4.17%;
+.tren-toko-fc-rules-title {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 13px; font-weight: 700; color: #475569;
+    margin-bottom: 14px;
 }
 
-.tren-toko-img {
-  position: absolute;
-  width: 87.50%;
-  height: 54.17%;
-  top: 45.83%;
-  left: 12.50%;
+.tren-toko-fc-rules-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 10px;
 }
 
-.tren-toko-vector-2 {
-  position: absolute;
-  width: 66.67%;
-  height: 37.50%;
-  top: 62.50%;
-  left: 33.33%;
+.fc-rule-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 14px; border-radius: 10px; border: 1px solid;
 }
 
-.tren-toko-vector-3 {
-  position: absolute;
-  width: 95.83%;
-  height: 75.00%;
-  top: 25.00%;
-  left: 4.17%;
+.fc-rule-item.pesat   { background: #f0fdf4; border-color: #bbf7d0; }
+.fc-rule-item.tumbuh  { background: #f0fdfa; border-color: #99f6e4; }
+.fc-rule-item.stagnan { background: #fefce8; border-color: #fef08a; }
+.fc-rule-item.menurun { background: #fff1f2; border-color: #fecdd3; }
+.fc-rule-item.kritis  { background: #fef2f2; border-color: #fca5a5; }
+.fc-rule-item.baru    { background: #f0f9ff; border-color: #bae6fd; }
+
+.fc-rule-dot {
+    width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0;
 }
 
-.tren-toko-filter-text {
-  position: relative;
-  width: 120px;
-  height: 19.5px;
+.fc-rule-item.pesat   .fc-rule-dot { background: #22c55e; }
+.fc-rule-item.tumbuh  .fc-rule-dot { background: #14b8a6; }
+.fc-rule-item.stagnan .fc-rule-dot { background: #f59e0b; }
+.fc-rule-item.menurun .fc-rule-dot { background: #ef4444; }
+.fc-rule-item.kritis  .fc-rule-dot { background: #991b1b; }
+.fc-rule-item.baru    .fc-rule-dot { background: #0ea5e9; }
+
+.fc-rule-label { font-size: 12px; font-weight: 700; color: #0f172a; }
+.fc-rule-desc  { font-size: 11px; color: #64748b; margin-top: 1px; }
+
+/* ===== BOTTOM CARDS ===== */
+.tren-toko-bottom-cards {
+    display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px;
 }
 
-.tren-toko-filter-label {
-  position: absolute;
-  top: 0;
-  left: 0;
-  font-family: "Inter-SemiBold", Helvetica;
-  font-weight: 600;
-  color: #0f172a;
-  font-size: 13px;
-  letter-spacing: 0;
-  line-height: 19.5px;
-  white-space: nowrap;
+.tren-toko-info-card {
+    background: #ffffff; border-radius: 20px;
+    border: 1px solid #e2e8f0; padding: 24px;
+    box-shadow: 0 4px 12px -4px rgba(0,0,0,0.04);
+    display: flex; flex-direction: column; gap: 14px;
 }
 
-.tren-toko-vector-4 {
-  position: absolute;
-  width: 79.17%;
-  height: 66.67%;
-  top: 33.33%;
-  left: 20.83%;
+/* ===== SUMMARY BADGES ===== */
+.tren-toko-summary-badges { display: flex; gap: 6px; flex-wrap: wrap; }
+
+.tren-badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 5px 11px; border-radius: 20px;
+    font-size: 11px; font-weight: 700;
 }
 
-.tren-toko-dropdown {
-  display: flex;
-  width: 220px;
-  height: 239px;
-  position: relative;
-  flex-direction: column;
-  align-items: flex-start;
-  padding: 1px;
-  background-color: #ffffff;
-  border-radius: 12px;
-  overflow: hidden;
-  border: 1px solid #e2e8f0;
-  box-shadow: 0px 8px 24px #0000001a;
+.tren-badge.pesat   { background: #dcfce7; color: #15803d; }
+.tren-badge.tumbuh  { background: #ccfbf1; color: #0f766e; }
+.tren-badge.stagnan { background: #fef3c7; color: #d97706; }
+.tren-badge.menurun { background: #fee2e2; color: #dc2626; }
+.tren-badge.kritis  { background: #fecaca; color: #991b1b; }
+
+/* ===== STATUS LIST ===== */
+.tren-toko-status-scroll {
+    max-height: 320px; overflow-y: auto; padding-right: 4px;
+    display: flex; flex-direction: column; gap: 8px;
 }
 
-.tren-toko-dropdown-active {
-  position: relative;
-  align-self: stretch;
-  width: 100%;
-  height: 39.5px;
-  background-color: #eef1ff;
-}
-
-.tren-toko-dropdown-item {
-  position: relative;
-  align-self: stretch;
-  width: 100%;
-  height: 39.5px;
-}
-
-.tren-toko-dot {
-  position: absolute;
-  top: 15px;
-  left: 14px;
-  width: 10px;
-  height: 10px;
-  border-radius: 5px;
-}
-
-.tren-toko-dot.blue {
-  background-color: #314cff;
-}
-
-.tren-toko-dot.green {
-  background-color: #10b981;
-}
-
-.tren-toko-dot.orange {
-  background-color: #f59e0b;
-}
-
-.tren-toko-dot.red {
-  background-color: #ef4444;
-}
-
-.tren-toko-dot.purple {
-  background-color: #8b5cf6;
-}
-
-.tren-toko-dropdown-active-text {
-  position: absolute;
-  top: 10px;
-  left: 34px;
-  font-family: "Inter-Bold", Helvetica;
-  font-weight: 700;
-  color: #314cff;
-  font-size: 13px;
-  letter-spacing: 0;
-  line-height: 19.5px;
-  white-space: nowrap;
-}
-
-.tren-toko-dropdown-text {
-  position: absolute;
-  top: 10px;
-  left: 34px;
-  font-family: "Inter-Medium", Helvetica;
-  font-weight: 500;
-  color: #0f172a;
-  font-size: 13px;
-  letter-spacing: 0;
-  line-height: 19.5px;
-  white-space: nowrap;
-}
-
-.tren-toko-check-wrapper {
-  position: absolute;
-  top: 13px;
-  left: 190px;
-  display: flex;
-  overflow: hidden;
-  width: 14px;
-  height: 14px;
-}
-
-.tren-toko-check {
-  flex: 1;
-  width: 9.33px;
-}
-
-/* Bottom Cards */
-.tren-toko-bottom-wrapper {
-  position: absolute;
-  top: 565px;
-  left: -6px;
-  width: 706px;
-  height: 410px;
-  display: flex;
-  gap: 20px;
-}
-
-.tren-toko-status-card,
-.tren-toko-insight-card {
-  margin-top: 1px;
-  display: flex;
-  width: 500px;
-  height: 450px;
-  position: relative;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 14px;
-  padding: 21px 23px 1px;
-  background-color: #ffffff;
-  border-radius: 16px;
-  border: 1px solid #e2e8f0;
-  box-shadow: 0px 2px 8px #0000000a;
-}
-
-.tren-toko-section-title-wrapper {
-  position: relative;
-  align-self: stretch;
-  width: 100%;
-  height: 22.5px;
-}
-
-.tren-toko-section-title {
-  position: absolute;
-  top: -2px;
-  left: 0;
-  font-family: "Inter-Bold", Helvetica;
-  font-weight: 700;
-  color: #0f172a;
-  font-size: 15px;
-  letter-spacing: 0;
-  line-height: 22.5px;
-  white-space: nowrap;
-}
-
-/* Status */
-.tren-toko-status-list {
-  display: flex;
-  flex-direction: column;
-  height: 332px;
-  align-items: flex-start;
-  gap: 8px;
-  position: relative;
-  align-self: stretch;
-  width: 100%;
-}
+.tren-toko-status-scroll::-webkit-scrollbar       { width: 6px; }
+.tren-toko-status-scroll::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 10px; }
+.tren-toko-status-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+.tren-toko-status-scroll::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
 
 .tren-toko-status-item {
-  display: flex;
-  height: 60px;
-  align-items: center;
-  gap: 12px;
-  padding: 10px 14px;
-  position: relative;
-  align-self: stretch;
-  width: 100%;
-  background-color: #f8fafc;
-  border-radius: 10px;
-  border: 1px solid #e2e8f0;
-}
-
-.tren-toko-status-item.last {
-  flex: 1;
-  flex-grow: 1;
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px 16px; border-radius: 12px;
+    background: #f8fafc; border: 1px solid #e2e8f0;
 }
 
 .tren-toko-status-dot {
-  position: relative;
-  width: 10px;
-  height: 10px;
-  border-radius: 5px;
+    width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0;
 }
-
-.tren-toko-status-dot.blue {
-  background-color: #314cff;
-}
-
-.tren-toko-status-dot.green {
-  background-color: #10b981;
-}
-
-.tren-toko-status-dot.orange {
-  background-color: #f59e0b;
-}
-
-.tren-toko-status-dot.red {
-  background-color: #ef4444;
-}
-
-.tren-toko-status-dot.purple {
-  background-color: #8b5cf6;
-}
-
-.tren-toko-status-name-wrapper {
-  display: flex;
-  flex-direction: column;
-  width: 305px;
-  height: 17px;
-  align-items: flex-start;
-  gap: 2px;
-  position: relative;
-}
+.tren-toko-status-dot.green   { background: #22c55e; }
+.tren-toko-status-dot.teal    { background: #14b8a6; }
+.tren-toko-status-dot.orange  { background: #f59e0b; }
+.tren-toko-status-dot.red     { background: #ef4444; }
+.tren-toko-status-dot.darkred { background: #991b1b; }
+.tren-toko-status-dot.gray    { background: #94a3b8; }
 
 .tren-toko-status-name {
-  position: absolute;
-  top: 0;
-  left: 0;
-  font-family: "Inter-Bold", Helvetica;
-  font-weight: 700;
-  color: #0f172a;
-  font-size: 13px;
-  letter-spacing: 0;
-  line-height: 19.5px;
-  white-space: nowrap;
+    flex: 1; font-size: 13px; font-weight: 700; color: #0f172a;
+}
+
+.tren-toko-status-right {
+    display: flex; align-items: center; gap: 8px;
+}
+
+.tren-toko-status-growth {
+    font-size: 12px; font-weight: 700; color: #64748b; min-width: 48px; text-align: right;
 }
 
 .tren-toko-status-badge {
-  min-width: 85px;
-  height: 28px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border-radius: 20px;
+    padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 700;
 }
 
-.tren-toko-status-text {
-  font-family: "Inter-Bold", Helvetica;
-  font-weight: 700;
-  font-size: 11px;
-  line-height: 16px;
-  position: static;
-  white-space: nowrap;
+.badge-pesat   { background: #dcfce7; color: #15803d; }
+.badge-tumbuh  { background: #ccfbf1; color: #0f766e; }
+.badge-stagnan { background: #fef3c7; color: #d97706; }
+.badge-menurun { background: #fee2e2; color: #dc2626; }
+.badge-kritis  { background: #fecaca; color: #991b1b; }
+.badge-baru    { background: #e0f2fe; color: #0369a1; }
+
+/* ===== EMPTY FORWARD CHAINING ===== */
+.tren-toko-empty-forward {
+    display: flex; align-items: flex-start; gap: 10px;
+    padding: 16px; background: #fff7ed;
+    border: 1px solid #fdba74; border-radius: 12px;
+    color: #9a3412; font-size: 13px; line-height: 1.6;
 }
 
-/* Insight */
-.tren-toko-insight-list {
-  display: flex;
-  flex-direction: column;
-  height: 246px;
-  align-items: flex-start;
-  gap: 12px;
-  position: relative;
-  align-self: stretch;
-  width: 100%;
-}
-
+/* ===== INSIGHT BOXES ===== */
 .tren-toko-insight-box {
-  position: relative;
-  align-self: stretch;
-  width: 100%;
-  height: 117px;
-  border-radius: 12px;
-  border: 1px solid;
+    display: flex; align-items: flex-start; gap: 16px;
+    padding: 20px; border-radius: 16px; border: 1px solid;
 }
 
-.tren-toko-insight-box.blue-box {
-  background-color: #eef1ff;
-  border-color: #d8dfff;
-}
-
-.tren-toko-insight-box.yellow-box {
-  flex: 1;
-  flex-grow: 1;
-  background-color: #fffbeb;
-  border-color: #fde68a;
-}
-
-.tren-toko-insight-header {
-  display: flex;
-  width: 263px;
-  height: 28px;
-  align-items: center;
-  gap: 8px;
-  position: relative;
-  top: 17px;
-  left: 17px;
-}
+.tren-toko-insight-box.blue-box   { background: #eef1ff; border-color: #d8dfff; }
+.tren-toko-insight-box.yellow-box { background: #fffbeb; border-color: #fde68a; }
 
 .tren-toko-insight-icon-wrapper {
-  display: flex;
-  width: 28px;
-  height: 28px;
-  align-items: center;
-  justify-content: center;
-  padding: 0px 7px;
-  position: relative;
-  border-radius: 7px;
+    width: 40px; height: 40px; border-radius: 11px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    margin-top: 2px;
+}
+.tren-toko-insight-icon-wrapper.blue-icon   { background: #314cff; }
+.tren-toko-insight-icon-wrapper.yellow-icon { background: #d97706; }
+
+.tren-toko-insight-content { display: flex; flex-direction: column; gap: 3px; }
+.tren-toko-insight-title   { font-size: 12px; font-weight: 700; }
+.tren-toko-insight-title.blue-text   { color: #314cff; }
+.tren-toko-insight-title.yellow-text { color: #92400e; }
+
+.tren-toko-insight-mall   { font-size: 16px; font-weight: 800; color: #0f172a; margin-top: 4px; }
+.tren-toko-insight-growth { font-size: 22px; font-weight: 800; }
+.tren-toko-insight-growth.positive { color: #16a34a; }
+.tren-toko-insight-growth.negative { color: #dc2626; }
+.tren-toko-insight-status { margin-top: 6px; }
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 992px) {
+    .tren-toko-bottom-cards      { grid-template-columns: 1fr; }
+    .tren-toko-fc-panel          { flex-direction: column; align-items: flex-start; }
+    .tren-toko-fc-rules-grid     { grid-template-columns: repeat(2, 1fr); }
 }
 
-.tren-toko-insight-icon-wrapper.blue-icon {
-  background-color: #314cff;
-}
-
-.tren-toko-insight-icon-wrapper.yellow-icon {
-  background-color: #d97706;
-}
-
-.tren-toko-insight-icon {
-  position: relative;
-  width: 14px;
-  height: 14px;
-}
-
-.tren-toko-vector-6 {
-  position: absolute;
-  width: 74.99%;
-  height: 50.46%;
-  top: 49.54%;
-  left: 25.01%;
-}
-
-.tren-toko-vector-7 {
-  position: absolute;
-  width: 79.16%;
-  height: 95.83%;
-  top: 4.17%;
-  left: 20.84%;
-}
-
-.tren-toko-vector-8 {
-  position: absolute;
-  width: 54.16%;
-  height: 70.83%;
-  top: 29.17%;
-  left: 45.84%;
-}
-
-.tren-toko-vector-9 {
-  position: absolute;
-  width: 54.16%;
-  height: 37.50%;
-  top: 62.50%;
-  left: 45.84%;
-}
-
-.tren-toko-insight-text-wrapper {
-  position: relative;
-  width: 156.78px;
-  height: 19.5px;
-}
-
-.tren-toko-insight-text-wrapper.small {
-  width: 127.78px;
-}
-
-.tren-toko-insight-title {
-  position: absolute;
-  top: 0;
-  left: 0;
-  font-family: "Inter-Bold", Helvetica;
-  font-weight: 700;
-  font-size: 13px;
-  letter-spacing: 0;
-  line-height: 19.5px;
-  white-space: nowrap;
-}
-
-.tren-toko-insight-title.blue-text {
-  color: #314cff;
-}
-
-.tren-toko-insight-title.yellow-text {
-  color: #92400e;
-}
-
-/* SCROLL BAR */
-.tren-toko-status-scroll{
-    max-height: 330px;
-    overflow-y: auto;
-    padding-right: 6px;
-}
-
-.tren-toko-status-scroll::-webkit-scrollbar{
-    width: 8px;
-}
-
-.tren-toko-status-scroll::-webkit-scrollbar-track{
-    background: #f1f5f9;
-    border-radius: 10px;
-}
-
-.tren-toko-status-scroll::-webkit-scrollbar-thumb{
-    background: #94a3b8;
-    border-radius: 10px;
-}
-
-.tren-toko-status-scroll::-webkit-scrollbar-thumb:hover{
-    background: #64748b;
-}
-
-/* WARNA STATUS */
-.tren-toko-status-dot.green{
-    background: #22c55e;
-}
-
-.tren-toko-status-dot.red{
-    background: #ef4444;
-}
-
-.tren-toko-status-dot.orange{
-    background: #f59e0b;
-}
-
-/* BADGE STATUS */
-.badge-naik{
-    background:#dcfce7;
-}
-
-.badge-naik .tren-toko-status-text{
-    color:#16a34a;
-}
-
-.badge-turun{
-    background:#fee2e2;
-}
-
-.badge-turun .tren-toko-status-text{
-    color:#dc2626;
-}
-
-.badge-stagnan{
-    background:#fef3c7;
-}
-
-.badge-stagnan .tren-toko-status-text{
-    color:#d97706;
-}
-
-/* PERTUMBUHAN TOKO */
-.tren-toko-insight-value{
-    margin-top:15px;
-
-    font-size:18px;
-    font-weight:700;
-
-    color:#1e293b;
-}
-
-.tren-toko-insight-growth{
-    margin-top:8px;
-
-    font-size:24px;
-    font-weight:700;
-}
-
-.tren-toko-insight-growth.positive{
-    color:#16a34a;
-}
-
-.tren-toko-insight-growth.negative{
-    color:#dc2626;
-}
-
-.tren-toko-warning{
-    margin-top: 20px;
-
-    padding: 12px 16px;
-
-    background: #fff7ed;
-    border: 1px solid #fdba74;
-
-    border-radius: 10px;
-
-    color: #c2410c;
-
-    font-size: 14px;
-    font-weight: 500;
-}
-
-.tren-toko-empty{
-    margin:20px;
-    padding:16px;
-
-    background:#fff7ed;
-    border:1px solid #fdba74;
-    border-radius:12px;
-
-    color:#9a3412;
-    font-size:14px;
-    line-height:1.6;
-}
-
-.tren-toko-empty ul{
-    margin-top:8px;
-    margin-left:18px;
+@media (max-width: 576px) {
+    .tren-toko-content           { padding: 20px 16px; }
+    .tren-toko-card-header       { flex-direction: column; }
+    .tren-toko-filter-form       { flex-wrap: wrap; }
+    .tren-toko-fc-right          { flex-wrap: wrap; }
+    .tren-toko-fc-rules-grid     { grid-template-columns: 1fr; }
 }
